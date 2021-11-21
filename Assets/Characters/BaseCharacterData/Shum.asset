@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9197061495c815d4ab19cf3ab4efcc86, type: 3}
+  m_Name: Shum
+  m_EditorClassIdentifier: 
+  _baseStats:
+    _keyList: 000000000100000002000000030000000400000005000000060000000700000008000000
+    _valueList: 3200000028000000000000000000000000000000000000000000000005000000fbffffff
+  _baseResistances:
+    _keyList: 02000000060000000300000004000000050000000700000001000000
+    _valueList: 00000000000000000000000000000000000000000000000000000000
+  _baseRecovery:
+    _keyList: 000000000100000002000000030000000400000005000000060000000700000008000000
+    _valueList: 000000000000000000000000000000000000000000000000000000000000000000000000
+  _baseActionsAvailable:
+    _keyList: 0000000001000000
+    _valueList: 0100000001000000
+  _baseCharacterClass: {fileID: 11400000, guid: 84e1f159b0e57c14e86f8d886bd64892, type: 2}

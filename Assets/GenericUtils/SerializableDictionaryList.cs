@@ -16,7 +16,7 @@ public class SerializableDictionaryList<T1, T2> : ISerializationCallbackReceiver
     [HideInInspector, SerializeField]
     List<SerializableDictionary<T1, T2>> _dictionaryList = new List<SerializableDictionary<T1, T2>>();
 
-    private int GetTotalDictionaryItems()
+    public int GetTotalDictionaryItems()
     {
         int totalDictionaryItems = 0;
         for (int i = 0; i < _dictionaryList.Count; ++i)

@@ -16,14 +16,17 @@ MonoBehaviour:
     _dictionaryList: []
   _permStatusModifierList:
     _dictionaryList: []
-  _triggerCondition:
-    statConditionsToProc:
-      _dictionaryList: []
-    statusEffectConditionsToProc:
-      _dictionaryList: []
-    triggersToProc: 0000000000000000
-    comparisonType: 0
-    conditionType: 0
+  _triggerGroup:
+    _serializableList:
+    - mainConditionType: 0
+      triggerConditions:
+      - statConditionsToProc:
+          _dictionaryList: []
+        statusEffectConditionsToProc:
+          _dictionaryList: []
+        triggersToProc: 
+        comparisonType: 0
+        conditionType: 0
   _skillSpecificStatModifierList:
     _dictionaryList: []
   _skillSpecificStatusModifierList:

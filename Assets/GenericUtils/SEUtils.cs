@@ -66,10 +66,10 @@ namespace SEUtils
         GREATER
     }
 
-    [Serializable]
-    public class TriggerConditions
-    {
 
+    [Serializable]
+    public struct TriggerConditions
+    {
         [SerializeField]
         public StatModifierDictionaryList statConditionsToProc;
 
@@ -86,7 +86,7 @@ namespace SEUtils
         public CONDITION_TYPE conditionType; 
 
         //[SerializeField]
-        //public int max_procs;
+        //public int max_procs; should go to the effect itself instead of the trigger
 
     }
 
@@ -98,6 +98,16 @@ namespace SEUtils
         public MODIFIER_TYPE mod_type;
         [SerializeField]
         public float amount;
+    }
+
+
+    [Serializable]
+    public struct TriggerGroup
+    {
+        [SerializeField]
+        public CONDITION_TYPE mainConditionType;
+        [SerializeField]
+        public List<TriggerConditions> triggerConditions;
     }
 
 

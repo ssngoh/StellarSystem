@@ -14,17 +14,22 @@ public class IncreaseResistancePassiveSkillEffect : BasePassiveEffect
      *      
      * 
      * 
-     */
+    // */
+    [SerializeField]
+    public TriggerGroupList _triggerGroup = new TriggerGroupList();
 
-    [SerializeField]
-    public TriggerConditions _triggerCondition;
+    //[SerializeField]
+    //public List<TriggerConditions> _triggerConditions = new List<TriggerConditions>();
 
-    [Header("Skill Specific")]
-    [SerializeField]
-    protected StatModifierDictionaryList _skillSpecificStatModifierList;
-    [Space(5)]
-    [SerializeField]
-    protected StatusEffectModifierDictionaryList _skillSpecificStatusModifierList;
+    //[SerializeField]
+    //public TriggerConditions _triggerCondition;
+
+    //[Header("Skill Specific")]
+    //[SerializeField]
+    //protected StatModifierDictionaryList _skillSpecificStatModifierList;
+    //[Space(5)]
+    //[SerializeField]
+    //protected StatusEffectModifierDictionaryList _skillSpecificStatusModifierList;
 
     public IncreaseResistancePassiveSkillEffect(Character self) : base(self)
     {

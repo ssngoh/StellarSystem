@@ -13,6 +13,7 @@ using UnityEditor;
 [Serializable] public class StatusEffectModifierDictionary : SerializableDictionary<SEUtils.STATUS_EFFECTS, SEUtils.Modifier> { }
 
 
+
 [Serializable]
 public class SerializableDictionary<T1,T2> : ISerializationCallbackReceiver
 {

@@ -5,6 +5,7 @@ using System;
 using UnityEditor;
 using SEUtils;
 using UnityObject = UnityEngine.Object;
+using DoField = SerializableCustomTypeDoField;
 
 [CanEditMultipleObjects]
 [Serializable]
@@ -61,7 +62,7 @@ public abstract class SerializableDictionaryDrawer<T1,T2> : PropertyDrawer
 
         if (GUI.Button(buttonRect, new GUIContent("X", "Clear dictionary"), EditorStyles.miniButtonRight))
         {
-            ClearDictionary();
+            ClearDictionary(); 
         }
 
 
@@ -78,8 +79,8 @@ public abstract class SerializableDictionaryDrawer<T1,T2> : PropertyDrawer
             keyRect.width /= 2;
             keyRect.width -= 14; 
             EditorGUI.BeginChangeCheck();
-            var newKey = DoField(keyRect, typeof(T1), key);
-            if(EditorGUI.EndChangeCheck())
+            var newKey = SerializableCustomTypeDoField.DoField(keyRect, typeof(T1), (dynamic)key);
+            if (EditorGUI.EndChangeCheck())
             {
                 try
                 {
@@ -97,7 +98,7 @@ public abstract class SerializableDictionaryDrawer<T1,T2> : PropertyDrawer
             valueRect.x = position.width / 2 + 15;
             valueRect.width = keyRect.width - _buttonWidth;
             EditorGUI.BeginChangeCheck();
-            value = DoField(valueRect, typeof(T2), value);
+            value = SerializableCustomTypeDoField.DoField(valueRect, typeof(T2), (dynamic)value);  
             if(EditorGUI.EndChangeCheck())
             {
                 _dictionary.SetValue(newKey, value);
@@ -116,55 +117,55 @@ public abstract class SerializableDictionaryDrawer<T1,T2> : PropertyDrawer
 
     }
 
-    static readonly Dictionary<Type, Func<Rect, object, object>> _Fields =
-        new Dictionary<Type, Func<Rect, object, object>>()
-        {
-            { typeof(int), (rect, value) => EditorGUI.IntField(rect, (int)value) },
-            { typeof(float), (rect, value) => EditorGUI.FloatField(rect, (float)value) },
-            { typeof(string), (rect, value) => EditorGUI.TextField(rect, (string)value) },
-            { typeof(bool), (rect, value) => EditorGUI.Toggle(rect, (bool)value) },
-            { typeof(Vector2), (rect, value) => EditorGUI.Vector2Field(rect, GUIContent.none, (Vector2)value) },
-            { typeof(Vector3), (rect, value) => EditorGUI.Vector3Field(rect, GUIContent.none, (Vector3)value) },
-            { typeof(Bounds), (rect, value) => EditorGUI.BoundsField(rect, (Bounds)value) },
-            { typeof(Rect), (rect, value) => EditorGUI.RectField(rect, (Rect)value) },
-        };
+    //static readonly Dictionary<Type, Func<Rect, object, object>> _Fields =
+    //    new Dictionary<Type, Func<Rect, object, object>>()
+    //    {
+    //        { typeof(int), (rect, value) => EditorGUI.IntField(rect, (int)value) },
+    //        { typeof(float), (rect, value) => EditorGUI.FloatField(rect, (float)value) },
+    //        { typeof(string), (rect, value) => EditorGUI.TextField(rect, (string)value) },
+    //        { typeof(bool), (rect, value) => EditorGUI.Toggle(rect, (bool)value) },
+    //        { typeof(Vector2), (rect, value) => EditorGUI.Vector2Field(rect, GUIContent.none, (Vector2)value) },
+    //        { typeof(Vector3), (rect, value) => EditorGUI.Vector3Field(rect, GUIContent.none, (Vector3)value) },
+    //        { typeof(Bounds), (rect, value) => EditorGUI.BoundsField(rect, (Bounds)value) },
+    //        { typeof(Rect), (rect, value) => EditorGUI.RectField(rect, (Rect)value) },
+    //    };
 
 
-    T DoField<T>(Rect rect, Type type, T value)
-    {
-        Func<Rect, object, object> field;
-        if (_Fields.TryGetValue(type, out field))
-            return (T)field(rect, value);
+    //T DoField<T>(Rect rect, Type type, T value)
+    //{
+    //    Func<Rect, object, object> field;
+    //    if (_Fields.TryGetValue(type, out field))
+    //        return (T)field(rect, value);
 
-        if (type.IsEnum)
-            return (T)(object)EditorGUI.EnumPopup(rect, (Enum)(object)value);
+    //    if (type.IsEnum)
+    //        return (T)(object)EditorGUI.EnumPopup(rect, (Enum)(object)value);
 
-        if(typeof(UnityObject).IsAssignableFrom(type))
-            return (T)(object)EditorGUI.ObjectField(rect, (UnityObject)(object)value, type, true);
+    //    if(typeof(UnityObject).IsAssignableFrom(type))
+    //        return (T)(object)EditorGUI.ObjectField(rect, (UnityObject)(object)value, type, true);
 
-        //Find some way to put it in a better place
-        if(type == typeof(Modifier))
-        {
-            Modifier mod = ((Modifier)(object)value);
+    //    //Find some way to put it in a better place
+    //    if(type == typeof(Modifier))
+    //    {
+    //        Modifier mod = ((Modifier)(object)value);
 
-            var modifierAmount = mod.amount;
-            var modType = mod.mod_type;
+    //        var modifierAmount = mod.amount;
+    //        var modType = mod.mod_type;
             
-            float halfRect = rect.width / 2;
-            rect.width /= 2;
+    //        float halfRect = rect.width / 2;
+    //        rect.width /= 2;
 
-            rect.x += halfRect;
-            mod.amount = DoField(rect, modifierAmount.GetType(), modifierAmount);
-            rect.x -= halfRect;
-            mod.mod_type = DoField(rect, modType.GetType(), modType);
+    //        rect.x += halfRect;
+    //        mod.amount = DoField(rect, modifierAmount.GetType(), modifierAmount);
+    //        rect.x -= halfRect;
+    //        mod.mod_type = DoField(rect, modType.GetType(), modType);
 
-            return (T)(object)mod;
+    //        return (T)(object)mod;
 
-        }
+    //    }
 
-        Debug.LogError("Type is not supported: " + type);
-        return value;
-    }
+    //    Debug.LogError("Type is not supported: " + type);
+    //    return value;
+    //}
 
 
     private void CheckInitialize(SerializedProperty property, GUIContent label)
@@ -235,16 +236,15 @@ public abstract class SerializableDictionaryDrawer<T1,T2> : PropertyDrawer
 [CustomPropertyDrawer(typeof(StringIntDictionary))]
 public class StringIntDictionaryDrawer : SerializableDictionaryDrawer<string, int> { }
 [CustomPropertyDrawer(typeof(StatusEffectIntDictionary))]
-public class StatusEffectIntDictionaryDrawer : SerializableDictionaryDrawer<SEUtils.STATUS_EFFECTS, int> { }
+public class StatusEffectIntDictionaryDrawer : SerializableDictionaryDrawer<STATUS_EFFECTS, int> { }
 [CustomPropertyDrawer(typeof(CharacterActionTypesIntDictionary))]
 public class CharacterActionTypesIntDictionaryDrawer : SerializableDictionaryDrawer<SECharacters.CHARACTER_ACTION_TYPES, int> { }
 [CustomPropertyDrawer(typeof(CharacterClassesIntDictionary))]
 public class CharacterClassesIntDictionaryDrawer : SerializableDictionaryDrawer<SECharacters.CHARACTER_CLASSES, int> { }
 [CustomPropertyDrawer(typeof(StatTypeIntDictionary))]
-public class StatTypeIntDictionaryDrawer : SerializableDictionaryDrawer<SEUtils.STAT_TYPE, int> { }
+public class StatTypeIntDictionaryDrawer : SerializableDictionaryDrawer<STAT_TYPE, int> { }
 [CustomPropertyDrawer(typeof(SkillTypeIntDictionary))]
 public class SkillTypeIntDictionaryDrawer : SerializableDictionaryDrawer<SESkills.SkillTypes, int> { }
 [CustomPropertyDrawer(typeof(StatusEffectModifierDictionary))]
-public class StatusEffectModifierDictionaryDrawer : SerializableDictionaryDrawer<SEUtils.STATUS_EFFECTS, SEUtils.Modifier> { }
-
+public class StatusEffectModifierDictionaryDrawer : SerializableDictionaryDrawer<STATUS_EFFECTS, Modifier> { }
 

@@ -57,16 +57,16 @@ public abstract class SerializableDictionaryDrawerList<T1,T2> : PropertyDrawer
     {
         //EditorGUI.BeginProperty(position, label, property);
 
-        //int arrayBracketStart = property.propertyPath.IndexOf("[");
-        //int index = -1;
-        //if (arrayBracketStart != -1)
-        //{
-        //    int arrayBracketEnd = property.propertyPath.IndexOf("]", arrayBracketStart);
-        //    index = int.Parse(property.propertyPath.Substring(arrayBracketStart + 1, arrayBracketEnd - arrayBracketStart - 1));
-        //    Debug.LogWarning("Index is  " + index);
+        int arrayBracketStart = property.propertyPath.IndexOf("[");
+        int index = -1;
+        if (arrayBracketStart != -1)
+        {
+            int arrayBracketEnd = property.propertyPath.IndexOf("]", arrayBracketStart);
+            index = int.Parse(property.propertyPath.Substring(arrayBracketStart + 1, arrayBracketEnd - arrayBracketStart - 1));
+            Debug.LogWarning("Index is  " + index);
 
-        //    //if()
-        //}
+           
+        }
 
         CheckInitialize(property, label); 
         position.height = 17f;
@@ -224,20 +224,27 @@ public abstract class SerializableDictionaryDrawerList<T1,T2> : PropertyDrawer
 
                 foreach (var field in allFields) 
                 {
-                    //SEUtils.TriggerConditions _triggerCondition -> targetObjectClassType.GetFields()
-                    var obj = targetObjectClassType.GetField(field.Name, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
-
-                    var actualObj = obj.GetValue(target);
-                    var temp = fieldInfo.GetValue(actualObj);
-
-                    if (temp is SerializableDictionaryList<T1, T2>)
+                    try
                     {
-                        _listDictionary = fieldInfo.GetValue(actualObj) as SerializableDictionaryList<T1, T2>;
-                        if (_listDictionary == null)
+                        //SEUtils.TriggerConditions _triggerCondition -> targetObjectClassType.GetFields()
+                        var obj = targetObjectClassType.GetField(field.Name, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
+
+                        var actualObj = obj.GetValue(target);
+                        var temp = fieldInfo.GetValue(actualObj); 
+
+                        if (temp is SerializableDictionaryList<T1, T2>)
                         {
-                            _listDictionary = new SerializableDictionaryList<T1, T2>();
-                            fieldInfo.SetValue(actualObj, _listDictionary);
+                            _listDictionary = fieldInfo.GetValue(actualObj) as SerializableDictionaryList<T1, T2>;
+                            if (_listDictionary == null)
+                            {
+                                _listDictionary = new SerializableDictionaryList<T1, T2>();
+                                fieldInfo.SetValue(actualObj, _listDictionary);
+                            }
                         }
+                    }
+                    catch
+                    {
+                        continue;
                     }
                 }
 

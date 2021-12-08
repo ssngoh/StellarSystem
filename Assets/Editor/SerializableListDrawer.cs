@@ -20,9 +20,9 @@ public abstract class SerializableListDrawer<T1> : PropertyDrawer
     {
         CheckInitialize(property, label);
         if (_foldout)
-            return (_serializableList.GetTotalItems() + 1) * 17f;
+            return (_serializableList.GetTotalItems() + 1) * 34f;
 
-        return 17f;
+        return 34f;
     }
 
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
@@ -58,9 +58,9 @@ public abstract class SerializableListDrawer<T1> : PropertyDrawer
         int index = 0;
         foreach(var listValue in _serializableList.GetList)
         {
-            position.y += 17f;
+            position.y += 34f;
             EditorGUI.BeginChangeCheck();
-            var newListValue = SerializableCustomTypeDoField.DoField(position, typeof(T1), (dynamic)listValue);
+            var newListValue = SerializableCustomTypeDoField.DoField(ref position, typeof(T1), (dynamic)listValue);
             if(EditorGUI.EndChangeCheck())
             {
                 try
@@ -69,7 +69,7 @@ public abstract class SerializableListDrawer<T1> : PropertyDrawer
                 }
                 catch(Exception e)
                 {
-                    Debug.LogError("Exception when assigning newListValue to list at index: " + index + "  " + e.Message);
+                    Debug.LogError("Exception when assigning new ListValue to list at index: " + index + "  " + e.Message);
                 }
                 break;
             }

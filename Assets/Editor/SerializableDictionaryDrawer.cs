@@ -79,7 +79,7 @@ public abstract class SerializableDictionaryDrawer<T1,T2> : PropertyDrawer
             keyRect.width /= 2;
             keyRect.width -= 14; 
             EditorGUI.BeginChangeCheck();
-            var newKey = SerializableCustomTypeDoField.DoField(keyRect, typeof(T1), (dynamic)key);
+            var newKey = SerializableCustomTypeDoField.DoField(ref keyRect, typeof(T1), (dynamic)key);
             if (EditorGUI.EndChangeCheck())
             {
                 try
@@ -98,7 +98,7 @@ public abstract class SerializableDictionaryDrawer<T1,T2> : PropertyDrawer
             valueRect.x = position.width / 2 + 15;
             valueRect.width = keyRect.width - _buttonWidth;
             EditorGUI.BeginChangeCheck();
-            value = SerializableCustomTypeDoField.DoField(valueRect, typeof(T2), (dynamic)value);  
+            value = SerializableCustomTypeDoField.DoField(ref valueRect, typeof(T2), (dynamic)value);  
             if(EditorGUI.EndChangeCheck())
             {
                 _dictionary.SetValue(newKey, value);

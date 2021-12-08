@@ -18,11 +18,19 @@ using System;
             {
                 for (int j = 0; j < GetList[i].triggerConditions.Count; ++j)
                 {
-                    totalItems += GetList[i].triggerConditions[j].statConditionsToProc != null ? GetList[i].triggerConditions[j].statConditionsToProc.GetTotalDictionaryItems() : 0;
-                    totalItems += GetList[i].triggerConditions[j].statusEffectConditionsToProc != null ? GetList[i].triggerConditions[j].statusEffectConditionsToProc.GetTotalDictionaryItems() : 0;
+                    totalItems += GetList[i].triggerConditions[j].statConditionsToProc != null ? GetList[i].triggerConditions[j].statConditionsToProc.GetTotalDictionaryItems() +
+                                                                                                 GetList[i].triggerConditions[j].statConditionsToProc.GetDictionaryList.Count : 0;
+
+                    totalItems += GetList[i].triggerConditions[j].statusEffectConditionsToProc != null ? GetList[i].triggerConditions[j].statusEffectConditionsToProc.GetTotalDictionaryItems() +
+                                                                                                         GetList[i].triggerConditions[j].statusEffectConditionsToProc.GetDictionaryList.Count : 0;
+
                     totalItems += GetList[i].triggerConditions[j].triggersToProc != null ? GetList[i].triggerConditions[j].triggersToProc.Count : 0;
+
+                    totalItems += 1; //statCondition buffer
+                    totalItems += 1; //status effect condition buffer
                     totalItems += 1; //comparisonType
                     totalItems += 1; //conditionType
+
                 }
             }
         }

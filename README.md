@@ -1,5 +1,6 @@
 # StellarSystem
-A customizable skill and class system from the unity inspector for a turn based game
+A customizable skill and class system from the unity inspector for a turn based game.
+This is still very much a work in progress
 
 This project will be split into 2 parts
 1. A detailed tutorial on how to do custom property drawers in unity inspector as well as putting all the code that is used for doing complex property drawers into a unity package

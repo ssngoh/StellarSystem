@@ -15,7 +15,7 @@ public static class SerializableCustomTypeDoField
     const float _dangerousButton1Position = 140f;
     const float _dangerousButton2Position = 250f;
 
-    static (bool, int) _removingIndex = (false, -1);
+    static (bool, int) _removingDictionaryIndex = (false, -1);
 
 
     public static readonly Dictionary<Type, Func<Rect, object, object>> _Fields =
@@ -79,11 +79,11 @@ public static class SerializableCustomTypeDoField
 
         if (triggerGroup.triggerConditions == null)
             triggerGroup.triggerConditions = new List<TriggerConditions>();
+        
 
         if (GUI.Button(addToListButtonRect, new GUIContent("+", "Add to list"), EditorStyles.miniButton))
-        {
             triggerGroup.triggerConditions.Add(new TriggerConditions());
-        }
+        
 
         addToListButtonRect.x = rect.width /4 - 23f;
         if (GUI.Button(addToListButtonRect, new GUIContent("-", "Remove from list"), EditorStyles.miniButton))
@@ -98,20 +98,20 @@ public static class SerializableCustomTypeDoField
 
             var buttonRect = rect;
             buttonRect.x = 17;
-            buttonRect.width = _buttonWidth * 10;
+            buttonRect.width = GetButtonWidthBasedOnStringLength("Add stat condition");
             
             if (GUI.Button(buttonRect, new GUIContent("Add stat condition", "Add to stat condition to proc list"), EditorStyles.miniButton))
-            {
                 triggerGroup.triggerConditions[i].statConditionsToProc.AddNewIndex();
-            }
 
-            if(triggerGroup.triggerConditions[i].statConditionsToProc != null)
+            if (triggerGroup.triggerConditions[i].statConditionsToProc != null)
                 SetupDictionary(triggerGroup.triggerConditions[i].statConditionsToProc, ref rect);
+
+            AddSemiBreakLine(ref rect);
 
             rect.y += 20f;
             buttonRect = rect;
             buttonRect.x = 17;
-            buttonRect.width = _buttonWidth * 10;
+            buttonRect.width = GetButtonWidthBasedOnStringLength("Add Status Effect condition");
 
             if (GUI.Button(buttonRect, new GUIContent("Add Status Effect condition", "Add to status effect condition to proc list"), EditorStyles.miniButton))
             {
@@ -120,15 +120,192 @@ public static class SerializableCustomTypeDoField
 
             if (triggerGroup.triggerConditions[i].statusEffectConditionsToProc != null)
                 SetupDictionary(triggerGroup.triggerConditions[i].statusEffectConditionsToProc, ref rect);
+
+            AddSemiBreakLine(ref rect);
+
+            rect.y += 20f;
+            var textRect = rect;
+            
+            EditorGUI.LabelField(textRect, "Triggers to proc", GetTextGUIStyle());
+            if (triggerGroup.triggerConditions[i].triggersToProc != null)
+                SetupHashSet(triggerGroup.triggerConditions[i].triggersToProc, ref rect);
+
         }
 
-        rect.y += 8f;
-        EditorGUI.LabelField(rect, "______________________________________________________________________________________________________");
+        AddBreakLine(ref rect);
         return triggerGroup;
     }
 
 
-    
+    static void SetupList<T1>(List<T1> _list, ref Rect position)
+    {
+        var buttonRect = position;
+        buttonRect.x = position.width;
+        buttonRect.width = _buttonWidth;
+        if (GUI.Button(buttonRect, new GUIContent("+", "Add to list"), EditorStyles.miniButton))
+        {
+            _list.Add(default);
+        }
+
+        buttonRect.x = position.width - (_buttonWidth + 5);
+        if (GUI.Button(buttonRect, new GUIContent("-", "Remove from list"), EditorStyles.miniButton))
+        {
+            _list.RemoveAt(_list.Count - 1);
+        }
+
+        int index = 0;
+        foreach (var listValue in _list)
+        {
+            position.y += 34f;
+            EditorGUI.BeginChangeCheck();
+            var newListValue = SerializableCustomTypeDoField.DoField(ref position, typeof(T1), (dynamic)listValue);
+            if (EditorGUI.EndChangeCheck())
+            {
+                try
+                {
+                    _list[index] = newListValue;
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError("Exception when assigning new ListValue to list at index: " + index + "  " + e.Message);
+                }
+                break;
+            }
+
+            ++index;
+        }
+    }
+
+
+    static void SetupList<T1>(SerializableList<T1> _serializableList, ref Rect position)
+    {
+        var buttonRect = position;
+        buttonRect.x = position.width;
+        buttonRect.width = _buttonWidth;
+        if (GUI.Button(buttonRect, new GUIContent("+", "Add to list"), EditorStyles.miniButton))
+        {
+            _serializableList.AddNewIndex();
+        }
+
+        buttonRect.x = position.width - (_buttonWidth + 5);
+        if (GUI.Button(buttonRect, new GUIContent("-", "Remove from list"), EditorStyles.miniButton))
+        {
+            _serializableList.RemoveLatestIndex();
+        }
+
+        int index = 0;
+        foreach (var listValue in _serializableList.GetList)
+        {
+            position.y += 34f;
+            EditorGUI.BeginChangeCheck();
+            var newListValue = SerializableCustomTypeDoField.DoField(ref position, typeof(T1), (dynamic)listValue);
+            if (EditorGUI.EndChangeCheck())
+            {
+                try
+                {
+                    _serializableList.GetList[index] = newListValue;
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError("Exception when assigning new ListValue to list at index: " + index + "  " + e.Message);
+                }
+                break;
+            }
+
+            ++index;
+        }
+    }
+
+    static void SetupHashSet<T1>(HashSet<T1> _hashSet, ref Rect position)
+    {
+        SetupHashSetButtons(position, _hashSet);
+        foreach (var hashValue in _hashSet)
+        {
+            position.y += _spacingBetweenDictionaryKeys;
+            var keyRect = position;
+            keyRect.width /= 2;
+            keyRect.width -= 14;
+            EditorGUI.BeginChangeCheck();
+            var newHashValue = DoField(ref keyRect, typeof(T1), (dynamic)hashValue);
+            if (EditorGUI.EndChangeCheck())
+            {
+                try
+                {
+                    _hashSet.Remove(hashValue);
+                    _hashSet.Add(newHashValue);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError("Exception when adding key:" + e.Message);
+                }
+                break;
+            }
+     
+            var removeRect = position;
+            removeRect.x = position.width;
+            removeRect.width = _buttonWidth;
+
+            if (GUI.Button(removeRect, new GUIContent("x", "Remove item"), EditorStyles.miniButton))
+            {
+                _hashSet.Remove(hashValue);
+                break;
+            }
+
+        }
+    }
+
+    static void SetupHashSetButtons<T1>(Rect referenceButtonRect, HashSet<T1> _serializableHashSet)
+    {
+        var buttonRect = referenceButtonRect;
+        buttonRect.x = referenceButtonRect.width;
+        buttonRect.width = _buttonWidth;
+
+        if (GUI.Button(buttonRect, new GUIContent("+", "Add item"), EditorStyles.miniButton))
+        {
+            try
+            {
+                T1 key;
+                if (typeof(T1) == typeof(string))
+                    key = (T1)(object)"";
+                else
+                    key = default(T1);
+
+                _serializableHashSet.Add(key);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("Adding to hash set failed because of " + e.Message);
+            }
+        }
+
+        float fillButtonWidth = _buttonWidth + 20;
+        buttonRect.x -= fillButtonWidth;
+        buttonRect.width = 34;
+        if (GUI.Button(buttonRect, new GUIContent("FILL", "Fill hashset with Enums"), EditorStyles.miniButtonRight))
+        {
+            try
+            {
+                if (typeof(T1).IsEnum)
+                {
+                    foreach (T1 val in Enum.GetValues(typeof(T1)))
+                        _serializableHashSet.Add(val);
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("Adding to hash set failed because of " + e.Message);
+            }
+        }
+
+        string buttonName = "Clear Hash set";
+        buttonRect.x = _dangerousButton2Position;
+        buttonRect.width = GetButtonWidthBasedOnStringLength(buttonName);
+
+        if (GUI.Button(buttonRect, new GUIContent(buttonName, "Clear Hash set. THIS IS IRREVERSIBLE"), EditorStyles.miniButtonRight))
+        {
+            _serializableHashSet.Clear();
+        }
+    }
 
     static void SetupDictionary<T1,T2>(SerializableDictionaryList<T1, T2> _listDictionary, ref Rect position)
     {
@@ -173,24 +350,24 @@ public static class SerializableCustomTypeDoField
                     break;
                 }
 
-                var removeRect = valueRect;
-                removeRect.x = valueRect.xMax + 2;
+                var removeRect = position;
+                removeRect.x = position.width;
                 removeRect.width = _buttonWidth;
-                //if (GUI.Button(removeRect, new GUIContent("x", "Remove item"), EditorStyles.miniButtonRight))
-                //{
-                //    RemoveItem(i, key);
-                //    break;
-                //}
+     
+                if (GUI.Button(removeRect, new GUIContent("x", "Remove item"), EditorStyles.miniButton))
+                {
+                    _listDictionary.GetDictionaryList[i].Remove(key);
+                    break;
+                }
             }
         }
 
-        if (_removingIndex.Item1)
+        if (_removingDictionaryIndex.Item1)
         {
-            _removingIndex.Item1 = false;
-            _listDictionary.GetDictionaryList.RemoveAt(_removingIndex.Item2);
+            _removingDictionaryIndex.Item1 = false;
+            _listDictionary.GetDictionaryList.RemoveAt(_removingDictionaryIndex.Item2);
         }
     }
-
 
 
     static void SetupDictionaryButtons<T1,T2>(Rect referenceButtonRect, SerializableDictionary<T1, T2> _serializableDict, int index)
@@ -256,7 +433,7 @@ public static class SerializableCustomTypeDoField
 
         if (GUI.Button(buttonRect, new GUIContent(buttonName, "Delete this index. THIS IS IRREVERSIBLE"), EditorStyles.miniButtonRight))
         {
-            _removingIndex = (true, index);
+            _removingDictionaryIndex = (true, index);
         }
     }
 
@@ -264,6 +441,29 @@ public static class SerializableCustomTypeDoField
     static float GetButtonWidthBasedOnStringLength(string sentence)
     {
         return sentence.Length * 6.5f;
+    }
+
+    static void AddBreakLine(ref Rect position)
+    {
+        position.y += 8f;
+        EditorGUI.LabelField(position, "______________________________________________________________________________________________________________________________________");
+       
+    }
+
+    static void AddSemiBreakLine(ref Rect position)
+    {
+        position.y += 8f;
+        EditorGUI.LabelField(position, "______________________________________");
+      
+    }
+
+    static GUIStyle GetTextGUIStyle()
+    {
+        GUIStyle textStyle = new GUIStyle(); //We can shift this to a global util function that only initializes once
+        textStyle.fontStyle = FontStyle.Bold;
+        textStyle.normal.textColor = Color.white;
+
+        return textStyle;
     }
 
 }

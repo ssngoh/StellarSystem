@@ -22,7 +22,7 @@ public abstract class SerializableListDrawer<T1> : PropertyDrawer
         if (_foldout)
             return (_serializableList.GetTotalItems() + 1) * 34f;
 
-        return 34f;
+        return 17f;
     }
 
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)

@@ -68,8 +68,9 @@ namespace SEUtils
 
 
     [Serializable]
-    public struct TriggerConditions
+    public class TriggerConditions
     {
+
         [SerializeField]
         public StatModifierDictionaryList statConditionsToProc;
 
@@ -77,13 +78,15 @@ namespace SEUtils
         public StatusEffectModifierDictionaryList statusEffectConditionsToProc;
 
         [SerializeField]
-        public List<BaseTriggerClass.TRIGGER_TYPE> triggersToProc;
+        public HashSet<BaseTriggerClass.TRIGGER_TYPE> triggersToProc = new HashSet<BaseTriggerClass.TRIGGER_TYPE>();
+
 
         [SerializeField]
         public COMPARISION_TYPE comparisonType;
 
-        [SerializeField]
+        [SerializeField] 
         public CONDITION_TYPE conditionType; 
+
 
         //[SerializeField]
         //public int max_procs; should go to the effect itself instead of the trigger

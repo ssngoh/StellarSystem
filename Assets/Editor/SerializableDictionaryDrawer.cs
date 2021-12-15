@@ -35,8 +35,8 @@ public abstract class SerializableDictionaryDrawer<T1,T2> : PropertyDrawer
 
         var foldoutRect = position;
         foldoutRect.width -= 2 * _buttonWidth;
-        EditorGUI.BeginChangeCheck();
 
+        EditorGUI.BeginChangeCheck();
         _foldout = EditorGUI.Foldout(foldoutRect, _foldout, label, true);
         if (EditorGUI.EndChangeCheck())
             EditorPrefs.SetBool(label.text, _foldout);
@@ -46,7 +46,7 @@ public abstract class SerializableDictionaryDrawer<T1,T2> : PropertyDrawer
         buttonRect.width = _buttonWidth + 2;
         if(GUI.Button(buttonRect, new GUIContent("+", "Add item"), EditorStyles.miniButton))
         {
-            AddNewItem();
+            AddNewDefaultItem();
             _foldout = true;
         }
 
@@ -194,7 +194,7 @@ public abstract class SerializableDictionaryDrawer<T1,T2> : PropertyDrawer
         _dictionary.Clear();
     }
 
-    void AddNewItem()
+    void AddNewDefaultItem()
     {
         try
         {
